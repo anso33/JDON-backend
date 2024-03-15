@@ -52,10 +52,10 @@ jobs:
       !contains(join(github.event.pull_request.labels.*.name, ','), 'NO-Deploy')
     steps:
       - name: Deploy to Dev-EC2
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          host: ${{ secrets.AWS_DEV_HOST }}
+          username: ${{ secrets.AWS_DEV_USERNAME }}
           key: ${{ secrets.AWS_DEV_KEY }}
           script: |
             cd /home/ec2-user/app
