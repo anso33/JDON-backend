@@ -54,8 +54,8 @@ jobs:
       - name: Deploy to Dev-EC2
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.AWS_DEV_HOST }}
-          username: ${{ secrets.AWS_DEV_USERNAME }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.AWS_DEV_KEY }}
           script: |
             cd /home/ec2-user/app
