@@ -2,10 +2,7 @@ name: JDON-Backend DEV CI-CD
 
 on:
   push:
-    branches: [ develop ]
-
-permissions:
-  contents: read
+    branches: [ develop, fix/#525-seperate-deploy ]
 
 jobs:
   integration:
@@ -26,27 +23,27 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: gradle Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Grant execute permission for gradlew & Build
-        run: |
-          cd module-api
-          chmod +x gradlew
-          ./gradlew clean build --stacktrace test
-        shell: bash
+  #      - name: gradle Cache dependencies
+  #        uses: actions/cache@v3
+  #        with:
+  #          path: |
+  #            ~/.gradle/caches
+  #            ~/.gradle/wrapper
+  #          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+  #          restore-keys: |
+  #            ${{ runner.os }}-gradle-
+  #      - name: Grant execute permission for gradlew & Build
+  #        run: |
+  #          cd module-api
+  #          chmod +x gradlew
+  #          ./gradlew clean build --stacktrace test
+  #        shell: bash
 
   deploy:
     needs: integration
     runs-on: ubuntu-latest
     if: >
-      !contains(join(github.event.pull_request.labels.*.name, ','), 'NO-Deploy')
+      contains(join(github.event.pull_request.labels.*.name, ','), '🌏 Api-Deploy')
     steps:
       - name: Deploy to Dev-EC2
         uses: appleboy/ssh-action@v1.0.3
@@ -56,5 +53,4 @@ jobs:
           key: ${{ secrets.AWS_DEV_KEY }}
           script: |
             cd /home/ec2-user/app
-            sh module-api-deploy.sh
             echo "deploy success"
